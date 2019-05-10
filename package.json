@@ -1,0 +1,39 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "build": "babel -d dist/bundle src",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run build && node dist/bundle/bin/www.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.0.5",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "big-integer": "^1.6.43"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cryptico-js": "^1.1.0",
+    "express": "^4.16.4",
+    "ipfs": "^0.35.0",
+    "multichain-node": "^2.2.0-version1.0.4"
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "stage-0"
+    ],
+    "plugins": [
+      "transform-async-to-generator"
+    ]
+  }
+}
