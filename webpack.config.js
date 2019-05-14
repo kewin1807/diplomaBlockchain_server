@@ -2,7 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 module.exports = {
   mode: 'development',
-  entry: './src/bin/www.js',
+  entry: ['@babel/polyfill', './src/bin/www.js'],
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'app.bundle.js',
@@ -21,7 +21,8 @@ module.exports = {
   target: 'node',
   node: {
     fs: 'empty',
-    net: 'empty'
+    net: 'empty',
+    __dirname: true
   },
   stats: {
     colors: true
