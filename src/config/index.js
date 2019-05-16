@@ -8,6 +8,6 @@ export default {
     port: '2768',
     host: 'localhost',
     user: 'multichainrpc',
-    pass: 'oc95tGPUKNEHSq9RixsBz4vC6SXT795mHzdKLXP2RYa'
+    pass: '4eeVsuDnSn2sUvnHCiVS9Cr7N6XUoawgytb1hZEDLpFR',
   }
 };
