@@ -1,6 +1,5 @@
 import multichainNode from '../../../server/multichainServer';
 import express from 'express';
-import { resolve } from 'url';
 import RSAKey from '../../../config/rsaKey';
 import cryptico from 'cryptico-js';
 const router = express.Router();

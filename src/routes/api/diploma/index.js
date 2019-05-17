@@ -22,7 +22,7 @@ router.post('/create-diploma', (req, res) => {
     let creatStream;
     const object ={};
     Object.keys(req.body).forEach((item) => {
-      if(item!==='publicKeyStudent'){
+      if(item!=='publicKeyStudent'){
         object[item] = req.body[item]
       }
     })
@@ -49,12 +49,12 @@ router.post('/create-diploma', (req, res) => {
           const nameAsset = cryptico.hashSHA256(str);
           // save in a issue
           multichainNode.issue({
-            address: address
+            address: address,
             asset: nameAsset,
             qty: 100,
             units: 1,
             details:object
-          });
+          })
           .then(async (res)=> {
               const IPFSLink = `https://ipfs.io/ipfs/${files[0].hash}`
               //encrypt IPFS link with publickey student
