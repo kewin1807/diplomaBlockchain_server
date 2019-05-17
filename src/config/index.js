@@ -5,9 +5,9 @@ export default {
     env: process.env.NODE_ENV || 'development'
   },
   multichain: {
-    port: '2768',
+    port: '9230',
     host: 'localhost',
     user: 'multichainrpc',
-    pass: 'oc95tGPUKNEHSq9RixsBz4vC6SXT795mHzdKLXP2RYa'
+    pass: 'HgGMbtGVLgHpDGuMgyvmsePZbjfeZAPQBiiF4gbj1q8x',
   }
 };

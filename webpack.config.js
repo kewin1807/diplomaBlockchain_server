@@ -1,25 +1,25 @@
-var path = require("path");
-var webpack = require("webpack");
+var path = require('path');
+var webpack = require('webpack');
 module.exports = {
   mode: 'development',
   entry: ['@babel/polyfill', './src/bin/www.js'],
   output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "app.bundle.js"
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'app.bundle.js'
   },
   module: {
     rules: [
       {
         test: /\.jsx$|\.js$/,
-        loader: "babel-loader",
+        loader: 'babel-loader',
         query: {
           compact: false,
-          presets: ["@babel/preset-env"]
+          presets: ['@babel/preset-env']
         }
       }
     ]
   },
-  target: "node",
+  target: 'node',
   node: {
     fs: 'empty',
     net: 'empty',
@@ -28,5 +28,5 @@ module.exports = {
   stats: {
     colors: true
   },
-  devtool: "source-map"
+  devtool: 'source-map'
 };
