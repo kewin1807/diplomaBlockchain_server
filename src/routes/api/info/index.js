@@ -1,10 +1,11 @@
-import multichainNode from "../../../server/multichainServer";
-import express from "express";
-import { resolve } from "url";
-
+import multichainNode from '../../../server/multichainServer';
+import express from 'express';
+import { resolve } from 'url';
+import RSAKey from '../../../config/rsaKey';
+import cryptico from 'cryptico-js';
 const router = express.Router();
 
-router.get("/getInfo", (req, res) => {
+router.get('/getInfo', (req, res) => {
   multichainNode
     .getInfo()
     .then(response => {
@@ -14,24 +15,29 @@ router.get("/getInfo", (req, res) => {
       res.status(500).send(JSON.stringify(error));
     });
 });
-router.get("/address", (req, res) => {
+router.get('/address', (req, res) => {
   multichainNode
     .getAddresses()
     .then(data => {
-      res.send(data);
+      RSAKey.init(address);
+      RSAKey.generateKeyPair();
+      res.send({
+        address: data[0],
+        publicKey: cryptico.publicKeyString(RSAKey.getKeyPair())
+      });
     })
     .catch(error => {
       res.status(500).send(JSON.stringify(error));
     });
 });
 
-router.get("/listPerm", (req, res) => {
+router.get('/listPerm', (req, res) => {
   multichainNode
     .getAddresses()
     .then(response => {
       multichainNode
         .listPermissions({
-          permissions: "all",
+          permissions: 'all',
           addresses: response[0]
         })
         .then(result => {
@@ -42,9 +48,9 @@ router.get("/listPerm", (req, res) => {
       res.status(500).send(JSON.stringify(error));
     });
 });
-router.post("/revoke", (req, res) => {
+router.post('/revoke', (req, res) => {
   let permissions = JSON.parse(req.body.permissions);
-  let str = "";
+  let str = '';
   for (let i = 0; i < permissions.length; i++) {
     if (i === permissions.length - 1) {
       str += `${permissions[i]}`;
@@ -65,9 +71,9 @@ router.post("/revoke", (req, res) => {
       res.status(500).send(JSON.stringify(error));
     });
 });
-router.post("/grant", (req, res) => {
+router.post('/grant', (req, res) => {
   let permissions = JSON.parse(req.body.permissions);
-  let str = "";
+  let str = '';
   for (let i = 0; i < permissions.length; i++) {
     if (i === permissions.length - 1) {
       str += `${permissions[i]}`;
