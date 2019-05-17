@@ -6,7 +6,7 @@ import pdfMakePrinter from 'pdfmake/src/printer';
 import TemplatePDF from './templatePDF';
 import multichainNode from '../../../server/multichainServer';
 import ipfs from '../../../server/ipfsServer';
-// import RSAKey from '../../../config/rsaKey'
+import RSAKey from '../../../config/rsaKey';
 const router = express.Router();
 
 router.post('/create-diploma', (req, res) => {
@@ -90,7 +90,12 @@ router.post('/get-diploma-file', (req, res) => {
  multichainNode.subscribe({stream: streamName}).then(() => {
     multichainNode.listStreamItems({stream: streamName}).then((response) => {
         multichainNode.getWalletTransaction({txid: response[0].data}).then((result) => {
-           res.send({link: result.data[0]})
+          res.send({ link: result.data[0]})
+          // const hexToLink = result.data[0].hexDecode();
+          // if(RSAKey.getKeyPair()){
+          //   const decodeLink = cryptico.decrypt(hexToLink, RSAKey.getKeyPair());
+          //   res.send(decodeLink.plaintext)
+          // }
         })
     })
  })
