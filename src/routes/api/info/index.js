@@ -18,7 +18,7 @@ router.get('/address', (req, res) => {
   multichainNode
     .getAddresses()
     .then(data => {
-      RSAKey.init(address);
+      RSAKey.init(data[0]);
       RSAKey.generateKeyPair();
       res.send({
         address: data[0],

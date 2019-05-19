@@ -1,15 +1,15 @@
 import cryptico from 'cryptico-js';
 
 class RSAKey {
-  init = address => {
+  init (address) {
     this.address = address;
   };
-  generateKeyPair = () => {
+  generateKeyPair(){
     if (this.address) {
-      this.RSAKey = cryptico.generateRSAKey(address, 1024);
+      this.RSAKey = cryptico.generateRSAKey(this.address, 1024);
     }
   };
-  getKeyPair = () => {
+  getKeyPair(){
     return this.RSAKey;
   };
 }
