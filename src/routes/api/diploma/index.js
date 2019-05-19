@@ -1,28 +1,28 @@
-import express from "express";
-import fs from "fs";
-import cryptico from "cryptico-js";
+import express from 'express';
+import fs from 'fs';
+import cryptico from 'cryptico-js';
 
-import pdfMakePrinter from "pdfmake/src/printer";
-import TemplatePDF from "./templatePDF";
-import multichainNode from "../../../server/multichainServer";
-import ipfs from "../../../server/ipfsServer";
-import RSAKey from "../../../config/rsaKey";
+import pdfMakePrinter from 'pdfmake/src/printer';
+import TemplatePDF from './templatePDF';
+import multichainNode from '../../../server/multichainServer';
+import ipfs from '../../../server/ipfsServer';
+import RSAKey from '../../../config/rsaKey';
 const router = express.Router();
 
-router.post("/create-diploma", (req, res) => {
+router.post('/create-diploma', (req, res) => {
   try {
     const fonts = {
       Roboto: {
-        normal: "fonts/Roboto-Regular.ttf",
-        bold: "fonts/Roboto-Medium.ttf",
-        italics: "fonts/Roboto-Italic.ttf",
-        bolditalics: "fonts/Roboto-MediumItalic.ttf"
+        normal: 'fonts/Roboto-Regular.ttf',
+        bold: 'fonts/Roboto-Medium.ttf',
+        italics: 'fonts/Roboto-Italic.ttf',
+        bolditalics: 'fonts/Roboto-MediumItalic.ttf'
       }
     };
     let creatStream;
     let object = {};
     Object.keys(req.body).forEach(item => {
-      if (item !== "publicKeyStudent" && item !== "address") {
+      if (item !== 'publicKeyStudent' && item !== 'address') {
         object = { ...object, ...{ [item]: req.body[item] } };
       }
     });
@@ -32,7 +32,7 @@ router.post("/create-diploma", (req, res) => {
     // create pdfs
     const doc = printer.createPdfKitDocument(docDefinition);
     doc.pipe(
-      (creatStream = fs.createWriteStream("pdfs/test.pdf").on("error", err => {
+      (creatStream = fs.createWriteStream('pdfs/test.pdf').on('error', err => {
         if (err) {
           res.status(500).send(JSON.stringify(err));
         }
@@ -40,26 +40,26 @@ router.post("/create-diploma", (req, res) => {
     );
     let chunks = [];
 
-    doc.on("data", chunk => {
+    doc.on('data', chunk => {
       chunks.push(chunk);
     });
-    doc.on("end", () => {
+    doc.on('end', () => {
       const buffer = Buffer.concat(chunks);
       ipfs.add(buffer, (err, files) => {
         if (err) {
-          return res.status(500).send({ message: "Đã xảy ra lỗi" });
+          return res.status(500).send({ message: 'Đã xảy ra lỗi' });
         }
         if (files) {
           let link = `https://ipfs.io/ipfs/${files[0].hash}`;
           const linkEncrypt = cryptico.encrypt(link, req.body.publicKeyStudent);
-          const linktoHex = Buffer.from(linkEncrypt.cipher, "utf8").toString(
-            "hex"
+          const linktoHex = Buffer.from(linkEncrypt.cipher, 'utf8').toString(
+            'hex'
           );
-          const hashToHex = Buffer.from(files[0].hash, "utf8").toString("hex");
+          const hashToHex = Buffer.from(files[0].hash, 'utf8').toString('hex');
           const nameStream = `${object.idStudent}`;
           multichainNode
             .create({
-              type: "stream",
+              type: 'stream',
               name: nameStream,
               open: false,
               details: {
@@ -76,20 +76,20 @@ router.post("/create-diploma", (req, res) => {
                 .then(async () => {
                   await multichainNode.publish({
                     stream: nameStream,
-                    key: "key1",
+                    key: 'key1',
                     data: hashToHex
                   });
                   await multichainNode.publish({
                     stream: nameStream,
-                    key: "key2",
+                    key: 'key2',
                     data: linktoHex
                   });
                   await multichainNode.publish({
                     stream: nameStream,
-                    key: "key3",
+                    key: 'key3',
                     data: { json: { ...object } }
                   });
-                  res.send({ message: "Tạo chứng chỉ thành công" });
+                  res.send({ message: 'Tạo chứng chỉ thành công' });
                 })
                 .catch(error => {
                   console.log(error);
@@ -108,7 +108,7 @@ router.post("/create-diploma", (req, res) => {
     throw err;
   }
 });
-router.get("/all-diploma", (req, res) => {
+router.get('/all-diploma', (req, res) => {
   multichainNode
     .listStreams()
     .then(response => {
@@ -119,22 +119,24 @@ router.get("/all-diploma", (req, res) => {
     });
 });
 
-router.post("/get-diploma-info", (req, res) => {
+router.post('/get-diploma-info', (req, res) => {
   const streamName = req.body.streamName;
   multichainNode
     .subscribe({ stream: streamName })
     .then(() => {
       multichainNode.listStreamItems({ stream: streamName }).then(response => {
-        console.log("response", response);
-        let link = "";
+        console.log('response', response);
+        let link = '';
         if (response.length !== 0) {
           const info = response[2].data.json;
-          const hexToLink = Buffer.from(response[1].data, "hex").toString(
-            "utf8"
+          const hexToLink = Buffer.from(response[1].data, 'hex').toString(
+            'utf8'
           );
-
           if (RSAKey.getKeyPair()) {
-            link = cryptico.decrypt(hexToLink, RSAKey.getKeyPair()).plaintext;
+            const decrypt = cryptico.decrypt(hexToLink, RSAKey.getKeyPair());
+            if (decrypt.status === 'success') {
+              link = decrypt.plaintext;
+            }
           }
           return res.send({ info: info, link: link });
         }
@@ -142,7 +144,7 @@ router.post("/get-diploma-info", (req, res) => {
       });
     })
     .catch(error => {
-      res.status(500).send({ message: "Đã có lỗi xảy ra" });
+      res.status(500).send({ message: 'Đã có lỗi xảy ra' });
       console.log(error);
     });
 });
