@@ -124,24 +124,31 @@ router.post('/get-diploma-info', (req, res) => {
   multichainNode
     .subscribe({ stream: streamName })
     .then(() => {
-      multichainNode.listStreamItems({ stream: streamName }).then(response => {
-        console.log('response', response);
-        let link = '';
-        if (response.length !== 0) {
-          const info = response[2].data.json;
-          const hexToLink = Buffer.from(response[1].data, 'hex').toString(
-            'utf8'
-          );
-          if (RSAKey.getKeyPair()) {
-            const decrypt = cryptico.decrypt(hexToLink, RSAKey.getKeyPair());
-            if (decrypt.status === 'success') {
-              link = decrypt.plaintext;
+      multichainNode
+        .listStreamItems({ stream: streamName })
+        .then(response => {
+          console.log('response', response);
+          let link = '';
+          if (response.length > 0) {
+            const info = response[2].data.json;
+            const hexToLink = Buffer.from(response[1].data, 'hex').toString(
+              'utf8'
+            );
+            if (RSAKey.getKeyPair()) {
+              const decrypt = cryptico.decrypt(hexToLink, RSAKey.getKeyPair());
+              if (decrypt.status === 'success') {
+                link = decrypt.plaintext;
+              }
             }
+            return res.send({ info: info, link: link });
           }
-          return res.send({ info: info, link: link });
-        }
-        return res.send({ info: null, link: link });
-      });
+          return res.send({ info: null, link: link });
+        })
+        .catch(error => {
+          res.status(500).send({ message: 'Đã có lỗi xảy ra' });
+
+          console.log(error);
+        });
     })
     .catch(error => {
       res.status(500).send({ message: 'Đã có lỗi xảy ra' });
